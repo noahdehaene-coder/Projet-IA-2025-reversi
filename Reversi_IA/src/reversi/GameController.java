@@ -1,6 +1,8 @@
 package reversi;
 
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.SwingUtilities;
 
 public class GameController {
 
@@ -46,6 +48,11 @@ public class GameController {
             if (model.isMoveValid(move, currentTurn)) {
                 // 2. Appliquer le coup
                 model.placePion(move, currentTurn);
+
+                view.getBoardPanel().setAvailableMoves(new ArrayList<>()); //clear hints
+
+                view.getBoardPanel().paintImmediately(0, 0, view.getBoardPanel().getWidth(), view.getBoardPanel().getHeight());
+                //show humanplayer's move immediately without waiting for bot response
                 
                 // 3. Passer au tour suivant
                 switchTurn();
@@ -105,6 +112,16 @@ public class GameController {
             model.getScore(Couleurcase.NOIR), 
             model.getScore(Couleurcase.BLANC)
         );
+
+        // Update available moves for human players
+        if ((currentTurn == Couleurcase.NOIR && player1 instanceof HumanPlayer) ||
+            (currentTurn == Couleurcase.BLANC && player2 instanceof HumanPlayer)) {
+            List<Move> validMoves = model.getValidMoves(currentTurn);
+            view.getBoardPanel().setAvailableMoves(validMoves);
+        } else {
+            // Clear hints during bot turns
+            view.getBoardPanel().setAvailableMoves(new ArrayList<>());
+        }
         view.getBoardPanel().repaint(); // Redessine le plateau
     }
     

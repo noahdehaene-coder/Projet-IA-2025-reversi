@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ArrayList; 
 
 public class BoardPanel extends JPanel{
     
@@ -33,6 +36,13 @@ public class BoardPanel extends JPanel{
     public void setBoardModel(ReversiPlateau boardModel){
         this.boardModel = boardModel;
     }
+
+    private List<Move> availableMoves = new ArrayList<>();
+    
+    public void setAvailableMoves(List<Move> moves) {
+        this.availableMoves = moves;
+        repaint(); // Redraw to show the new hints
+    }
     
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -43,6 +53,12 @@ public class BoardPanel extends JPanel{
             g.drawLine(i*CELL_SIZE, 0, i*CELL_SIZE, getHeight());
             
             g.drawLine(0, i*CELL_SIZE, getWidth(), i*CELL_SIZE);
+        }
+
+        // Draw available move hints
+        g.setColor(new Color(171, 171, 171, 120)); // Semi-transparent grey
+        for (Move move : availableMoves) {
+            g.fillOval(move.y * CELL_SIZE + 25, move.x * CELL_SIZE + 25, 30, 30);
         }
         
         for (int i = 0; i<ReversiPlateau.taille;i++){
