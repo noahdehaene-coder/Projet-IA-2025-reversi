@@ -13,6 +13,10 @@ public class GameController {
     private Player player2; // Blanc
     private Couleurcase currentTurn;
 
+    public GameFrame getView() {
+        return view;
+    }
+
     public GameController(ReversiPlateau model) {
         this.model = model;
     }
@@ -124,10 +128,28 @@ public class GameController {
         }
         view.getBoardPanel().repaint(); // Redessine le plateau
     }
+
+    public Player getPlayer1() { return player1; }
+    public Player getPlayer2() { return player2; }
     
-    private void endGame() {
-        // Calculer le vainqueur et l'afficher dans infoPanel
-        view.getInfoPanel().showWinner("Partie terminée !");
+      private void endGame() {
+        // Calculate winner and scores
+        int blackScore = model.getScore(Couleurcase.NOIR);
+        int whiteScore = model.getScore(Couleurcase.BLANC);
+        
+        String winnerMessage;
+        if (blackScore > whiteScore) {
+            winnerMessage = "Noir gagne!";
+        } else if (whiteScore > blackScore) {
+            winnerMessage = "Blanc gagne!";
+        } else {
+            winnerMessage = "Égalité!";
+        }
+        
+        // Show results dialog
+        SwingUtilities.invokeLater(() -> {
+            new ResultsDialog(view, this, winnerMessage, blackScore, whiteScore).setVisible(true);
+        });
     }
 }
 

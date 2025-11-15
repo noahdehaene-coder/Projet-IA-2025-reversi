@@ -18,12 +18,10 @@ public class Main {
             // 3. Demander au contrôleur d'afficher la Vue (la fenêtre)
             // La vue sera créée et liée au contrôleur et au modèle.
             controller.showGameWindow();
+
+            // 4. Joueur choisi contre qui jouer, puis commence une partie
+            new PlayerSelectionDialog(controller.getView(), controller).setVisible(true);
             
-            // 4. Démarrer une partie par défaut
-            controller.startNewGame(
-                new HumanPlayer(Couleurcase.NOIR), 
-                new RandomBot(Couleurcase.BLANC)
-            );
         });
     }
 }
