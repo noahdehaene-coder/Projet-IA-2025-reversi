@@ -10,45 +10,98 @@ public class DijkstraBot extends BotPlayer {
     
     @Override
     public Move getMove(ReversiPlateau board) {
-        // Get all valid moves for the current player
         List<Move> validMoves = board.getValidMoves(this.color);
         
-        // If no valid moves, return null (pass turn)
         if (validMoves.isEmpty()) {
             return null;
         }
         
-        // If only one valid move, return it immediately
         if (validMoves.size() == 1) {
             return validMoves.get(0);
         }
         
-        // Use Dijkstra-inspired search to find the best move
         return dijkstraSearch(board, validMoves);
     }
     
     /**
-     * Dijkstra-inspired search that prioritizes moves with immediate high value
-     * Unlike traditional Dijkstra for pathfinding, we use it to evaluate move quality
-     * based on immediate and short-term gains
+     * Dijkstra algorithm adapted for Reversi:
+     * - Each board state is a node
+     * - Each move is an edge with negative weight (we want to minimize opponent's advantage)
+     * - Finds the path that minimizes opponent's maximum potential
      */
-    private Move dijkstraSearch(ReversiPlateau currentBoard, List<Move> validMoves) {
-        Move bestMove = null;
-        double bestScore = Double.NEGATIVE_INFINITY;
+    private Move dijkstraSearch(ReversiPlateau startBoard, List<Move> validMoves) {
+        // Priority queue for Dijkstra's algorithm
+        PriorityQueue<BoardNode> queue = new PriorityQueue<>(Comparator.comparingInt(node -> node.distance));
+        Map<String, Integer> distances = new HashMap<>();
+        Map<String, Move> firstMoves = new HashMap<>();
         
-        // Evaluate each possible move using Dijkstra-inspired evaluation
-        for (Move move : validMoves) {
-            // Create a copy of the board to simulate the move
-            ReversiPlateau boardAfterMove = currentBoard.copy();
-            boardAfterMove.placePion(move, this.color);
+        // Initialize with all possible first moves
+        for (Move firstMove : validMoves) {
+            ReversiPlateau newBoard = startBoard.copy();
+            newBoard.placePion(firstMove, this.color);
             
-            // Calculate the "cost" (inverse of benefit) of this move
-            double moveScore = evaluateMoveWithDijkstra(currentBoard, boardAfterMove, move);
+            String boardKey = getBoardKey(newBoard);
+            // Initial distance is the negative of our advantage (we want to minimize opponent's advantage)
+            int initialDistance = -evaluateBoardAdvantage(newBoard);
             
-            // Update best move if this one has a better score
-            if (moveScore > bestScore) {
-                bestScore = moveScore;
-                bestMove = move;
+            distances.put(boardKey, initialDistance);
+            firstMoves.put(boardKey, firstMove);
+            queue.add(new BoardNode(newBoard, initialDistance, 0));
+        }
+        
+        Move bestMove = null;
+        int bestFinalDistance = Integer.MAX_VALUE;
+        
+        // Dijkstra's algorithm
+        while (!queue.isEmpty()) {
+            BoardNode current = queue.poll();
+            
+            // If we reached maximum depth or game over, evaluate this path
+            if (current.depth >= 6 || current.board.GameOver()) {
+                if (current.distance < bestFinalDistance) {
+                    bestFinalDistance = current.distance;
+                    bestMove = firstMoves.get(getBoardKey(current.board));
+                }
+                continue;
+            }
+            
+            // Explore opponent's moves (this is the key - we consider opponent's best responses)
+            Couleurcase currentPlayer = current.depth % 2 == 0 ? this.color.oppose() : this.color;
+            List<Move> nextMoves = current.board.getValidMoves(currentPlayer);
+            
+            if (nextMoves.isEmpty()) {
+                // Player passes
+                ReversiPlateau passBoard = current.board.copy();
+                String boardKey = getBoardKey(passBoard);
+                int newDistance = current.distance;
+                
+                if (!distances.containsKey(boardKey) || newDistance < distances.get(boardKey)) {
+                    distances.put(boardKey, newDistance);
+                    queue.add(new BoardNode(passBoard, newDistance, current.depth + 1));
+                    if (!firstMoves.containsKey(boardKey)) {
+                        firstMoves.put(boardKey, firstMoves.get(getBoardKey(current.board)));
+                    }
+                }
+                continue;
+            }
+            
+            for (Move move : nextMoves) {
+                ReversiPlateau newBoard = current.board.copy();
+                newBoard.placePion(move, currentPlayer);
+                
+                // Calculate edge weight: negative of the advantage change
+                int advantageChange = evaluateBoardAdvantage(newBoard) - evaluateBoardAdvantage(current.board);
+                int newDistance = current.distance - advantageChange; // Negative because we want to minimize opponent's advantage
+                
+                String boardKey = getBoardKey(newBoard);
+                
+                if (!distances.containsKey(boardKey) || newDistance < distances.get(boardKey)) {
+                    distances.put(boardKey, newDistance);
+                    queue.add(new BoardNode(newBoard, newDistance, current.depth + 1));
+                    if (!firstMoves.containsKey(boardKey)) {
+                        firstMoves.put(boardKey, firstMoves.get(getBoardKey(current.board)));
+                    }
+                }
             }
         }
         
@@ -56,94 +109,96 @@ public class DijkstraBot extends BotPlayer {
     }
     
     /**
-     * Dijkstra-inspired evaluation that considers:
-     * 1. Immediate piece gain (flips)
-     * 2. Strategic position value (corners, edges)
-     * 3. Mobility (number of future moves)
+     * Evaluates board advantage from this bot's perspective
+     * Positive = good for bot, Negative = good for opponent
      */
-    private double evaluateMoveWithDijkstra(ReversiPlateau originalBoard, ReversiPlateau newBoard, Move move) {
-        double score = 0.0;
+    private int evaluateBoardAdvantage(ReversiPlateau board) {
+        if (board.GameOver()) {
+            int myScore = board.getScore(this.color);
+            int opponentScore = board.getScore(this.color.oppose());
+            if (myScore > opponentScore) return 1000;
+            if (myScore < opponentScore) return -1000;
+            return 0;
+        }
         
-        // 1. Immediate piece difference (primary factor)
-        int immediateGain = calculateImmediateGain(originalBoard, newBoard, move);
-        score += immediateGain * 2.0; // Weight immediate gains heavily
+        int basicScore = board.getScore(this.color) - board.getScore(this.color.oppose());
         
-        // 2. Position value - Dijkstra would prioritize stable positions
-        score += getPositionValue(move.x, move.y) * 1.5;
+        // Add positional advantage
+        int positionalScore = evaluatePositionalAdvantage(board);
         
-        // 3. Mobility - Dijkstra values paths that maintain options
-        int myMobility = newBoard.getValidMoves(this.color).size();
-        int opponentMobility = newBoard.getValidMoves(this.color.oppose()).size();
-        score += (myMobility - opponentMobility) * 0.5;
+        // Add mobility advantage
+        int mobilityScore = evaluateMobilityAdvantage(board);
         
-        // 4. Stability - Dijkstra prefers stable, low-risk positions
-        score += evaluateStability(newBoard, move) * 1.2;
-        
-        return score;
+        return basicScore + positionalScore + mobilityScore;
     }
     
     /**
-     * Calculate how many pieces were flipped by this move
+     * Evaluate positional advantage using stable piece evaluation
      */
-    private int calculateImmediateGain(ReversiPlateau originalBoard, ReversiPlateau newBoard, Move move) {
-        int originalCount = originalBoard.getScore(this.color);
-        int newCount = newBoard.getScore(this.color);
-        return newCount - originalCount - 1; // Subtract 1 for the placed piece
-    }
-    
-    /**
-     * Assign values to board positions (corners are most valuable, etc.)
-     */
-    private double getPositionValue(int x, int y) {
-        // Corner positions are most stable and valuable
-        if ((x == 0 || x == 7) && (y == 0 || y == 7)) {
-            return 10.0; // Corners
-        }
-        // Edge positions are good but not as good as corners
-        else if (x == 0 || x == 7 || y == 0 || y == 7) {
-            return 3.0; // Edges
-        }
-        // Center positions are moderately valuable
-        else if (x >= 2 && x <= 5 && y >= 2 && y <= 5) {
-            return 1.5; // Center
-        }
-        // Positions adjacent to corners are dangerous
-        else if ((x == 0 || x == 7) && (y == 1 || y == 6) ||
-                 (y == 0 || y == 7) && (x == 1 || x == 6)) {
-            return -5.0; // Avoid positions that give opponent corner access
-        }
-        else {
-            return 0.5; // Neutral positions
-        }
-    }
-    
-    /**
-     * Evaluate how stable this position is (less likely to be flipped back)
-     */
-    private double evaluateStability(ReversiPlateau board, Move move) {
-        double stability = 0.0;
-        int x = move.x, y = move.y;
+    private int evaluatePositionalAdvantage(ReversiPlateau board) {
+        int score = 0;
+        int[][] positionWeights = {
+            {100, -20, 10, 5, 5, 10, -20, 100},
+            {-20, -50, -2, -2, -2, -2, -50, -20},
+            {10, -2, -1, -1, -1, -1, -2, 10},
+            {5, -2, -1, -1, -1, -1, -2, 5},
+            {5, -2, -1, -1, -1, -1, -2, 5},
+            {10, -2, -1, -1, -1, -1, -2, 10},
+            {-20, -50, -2, -2, -2, -2, -50, -20},
+            {100, -20, 10, 5, 5, 10, -20, 100}
+        };
         
-        // Check if piece is protected in multiple directions
-        int protectedDirections = 0;
-        int[][] directions = {{-1,0}, {1,0}, {0,-1}, {0,1}, {-1,-1}, {-1,1}, {1,-1}, {1,1}};
-        
-        for (int[] dir : directions) {
-            int nx = x + dir[0];
-            int ny = y + dir[1];
-            if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && 
-                board.getEtat(nx, ny) == this.color) {
-                protectedDirections++;
+        for (int i = 0; i < ReversiPlateau.taille; i++) {
+            for (int j = 0; j < ReversiPlateau.taille; j++) {
+                Couleurcase cell = board.getEtat(i, j);
+                if (cell == this.color) {
+                    score += positionWeights[i][j];
+                } else if (cell == this.color.oppose()) {
+                    score -= positionWeights[i][j];
+                }
             }
         }
         
-        stability = protectedDirections * 0.3;
+        return score / 10; // Normalize
+    }
+    
+    /**
+     * Evaluate mobility advantage
+     */
+    private int evaluateMobilityAdvantage(ReversiPlateau board) {
+        int myMoves = board.getValidMoves(this.color).size();
+        int opponentMoves = board.getValidMoves(this.color.oppose()).size();
         
-        // Additional stability for corner pieces (they can never be flipped)
-        if ((x == 0 || x == 7) && (y == 0 || y == 7)) {
-            stability += 5.0;
+        if (myMoves + opponentMoves == 0) return 0;
+        
+        return (myMoves - opponentMoves) * 2;
+    }
+    
+    /**
+     * Creates a unique key for board state (simplified for this example)
+     */
+    private String getBoardKey(ReversiPlateau board) {
+        StringBuilder key = new StringBuilder();
+        for (int i = 0; i < ReversiPlateau.taille; i++) {
+            for (int j = 0; j < ReversiPlateau.taille; j++) {
+                key.append(board.getEtat(i, j).ordinal());
+            }
         }
+        return key.toString();
+    }
+    
+    /**
+     * Node class for Dijkstra's algorithm
+     */
+    private static class BoardNode {
+        ReversiPlateau board;
+        int distance;
+        int depth;
         
-        return stability;
+        BoardNode(ReversiPlateau board, int distance, int depth) {
+            this.board = board;
+            this.distance = distance;
+            this.depth = depth;
+        }
     }
 }
