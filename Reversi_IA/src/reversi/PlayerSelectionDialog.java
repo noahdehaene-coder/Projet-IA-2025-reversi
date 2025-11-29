@@ -29,13 +29,13 @@ public class PlayerSelectionDialog extends JDialog {
         selectionPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         selectionPanel.add(new JLabel("Joueur Noir:", SwingConstants.CENTER));
-        blackPlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS", "DFS", "Dijkstra","Greedy BFS Bot"});
+        blackPlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS", "DFS", "Dijkstra","Greedy BFS Bot", "A*"});
         blackPlayerCombo.setFocusable(false);
         blackPlayerCombo.setSelectedItem("Humain"); // DEFAULT: Human for black
         selectionPanel.add(blackPlayerCombo);
         
         selectionPanel.add(new JLabel("Joueur Blanc:", SwingConstants.CENTER));
-        whitePlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS", "DFS", "Dijkstra","Greedy BFS Bot"});
+        whitePlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS", "DFS", "Dijkstra","Greedy BFS Bot", "A*"});
         whitePlayerCombo.setFocusable(false); // Remove focus outline
         whitePlayerCombo.setSelectedItem("Bot Aléatoire"); // DEFAULT: Bot Aleatoire for white
         selectionPanel.add(whitePlayerCombo);
@@ -76,8 +76,10 @@ public class PlayerSelectionDialog extends JDialog {
             return new DFSBot(color);
         else if ("Dijkstra".equals(playerType))
             return new DijkstraBot(color);
-        else
+        else if ("Greedy BFS Bot".equals(playerType))
             return new GreedyBFSBot(color);
+        else 
+            return new AstarBot(color);
 
     }
 }
