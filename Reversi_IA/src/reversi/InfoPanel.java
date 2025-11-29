@@ -1,7 +1,7 @@
 package reversi;
 
 import javax.swing.*;
-import java.awt.FlowLayout;
+
 import java.awt.*;
 
 public class InfoPanel extends JPanel {
@@ -40,6 +40,7 @@ public class InfoPanel extends JPanel {
         case "HumanPlayer": return "Humain";
         case "RandomBot": return "Bot Aléatoire";
         case "BFSBot": return "BFS Bot";
+        case "DFSBot" : return "DFS Bot";
         default: return className;
     }
 }

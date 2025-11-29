@@ -166,6 +166,7 @@ public class GameController {
             case "HumanPlayer": return "Humain";
             case "RandomBot": return "Bot Aléatoire";
             case "BFSBot": return "BFS Bot";
+            case "DFSBot" : return "DFS Bot";
             default: return className;
         }
     }
