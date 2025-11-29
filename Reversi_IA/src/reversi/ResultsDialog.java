@@ -76,6 +76,7 @@ public class ResultsDialog extends JDialog {
             case "BFSBot": return "BFS Bot";
             case "DFSBot" : return "DFS Bot";
             case "DijkstraBot" : return "Dijkstra Bot";
+            case "GreedyBFSBot" : return "Greedy BFS Bot";
             default: return className;
         }
     }
