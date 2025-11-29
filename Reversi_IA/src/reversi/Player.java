@@ -10,4 +10,8 @@ public abstract class Player {
     public Couleurcase getColor() {
         return color;
     }
+    
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
 }

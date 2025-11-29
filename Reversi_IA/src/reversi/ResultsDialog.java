@@ -8,9 +8,12 @@ import java.awt.event.ActionListener;
 public class ResultsDialog extends JDialog {
     private GameController controller;
     
-    public ResultsDialog(JFrame parent, GameController controller, String winner, int blackScore, int whiteScore) {
+    public ResultsDialog(JFrame parent, GameController controller, String winner, int blackScore, int whiteScore, String blackPlayerName, String whitePlayerName) {
         super(parent, "Partie Terminée", true);
         this.controller = controller;
+
+        String blackName = getName(blackPlayerName);
+        String whiteName = getName(whitePlayerName);
         
         setLayout(new BorderLayout());
         setSize(350, 200);
@@ -22,7 +25,7 @@ public class ResultsDialog extends JDialog {
         
         // Score display
         JLabel scoreLabel = new JLabel(
-            String.format("Noir: %d - Blanc: %d", blackScore, whiteScore), 
+            String.format("%s: %d - %s: %d", blackName, blackScore, whiteName, whiteScore), 
             SwingConstants.CENTER
         );
         
@@ -64,5 +67,14 @@ public class ResultsDialog extends JDialog {
         contentPanel.add(buttonPanel);
         
         add(contentPanel, BorderLayout.CENTER);
+    }
+
+    private String getName(String className) {
+        switch (className) {
+            case "HumanPlayer": return "Humain";
+            case "RandomBot": return "Bot Aléatoire";
+            case "BFSBot": return "BFS Bot";
+            default: return className;
+        }
     }
 }

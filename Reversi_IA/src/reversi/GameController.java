@@ -98,23 +98,29 @@ public class GameController {
     private void checkNextTurn() {
         Player currentPlayer = (currentTurn == Couleurcase.NOIR) ? player1 : player2;
         
-        if (currentPlayer instanceof BotPlayer) {
-            // Demander au bot de jouer (peut nécessiter un SwingWorker pour les IA longues)
-            Move botMove = ((BotPlayer) currentPlayer).getMove(model.copy()); // Donne une copie pour éviter la triche
-            
-            if (botMove != null && model.isMoveValid(botMove, currentTurn)) {
-                model.placePion(botMove, currentTurn);
-                switchTurn();
-            }
+        if (!(currentPlayer instanceof HumanPlayer)) {
+            SwingUtilities.invokeLater(() -> {
+                Move botMove = ((BotPlayer) currentPlayer).getMove(model.copy()); // Donne une copie pour éviter la triche
+                
+                if (botMove != null && model.isMoveValid(botMove, currentTurn)) {
+                    model.placePion(botMove, currentTurn);
+                    switchTurn();
+                } 
+            });
         }
         // Si c'est un HumanPlayer, on ne fait rien, on attend handleHumanMove()
     }
 
     private void updateView() {
+        String blackName = (player1 != null) ? player1.getName() : "Noir";
+        String whiteName = (player2 != null) ? player2.getName() : "Blanc";
+
         view.getInfoPanel().updateInfo(
             currentTurn, 
             model.getScore(Couleurcase.NOIR), 
-            model.getScore(Couleurcase.BLANC)
+            model.getScore(Couleurcase.BLANC),
+            blackName,
+            whiteName
         );
 
         // Update available moves for human players
@@ -136,20 +142,32 @@ public class GameController {
         // Calculate winner and scores
         int blackScore = model.getScore(Couleurcase.NOIR);
         int whiteScore = model.getScore(Couleurcase.BLANC);
+
+        String blackName = (player1 != null) ? player1.getName() : "Noir";
+        String whiteName = (player2 != null) ? player2.getName() : "Blanc";
         
         String winnerMessage;
         if (blackScore > whiteScore) {
-            winnerMessage = "Noir gagne!";
+            winnerMessage = getName(blackName)+" gagne!";
         } else if (whiteScore > blackScore) {
-            winnerMessage = "Blanc gagne!";
+            winnerMessage = getName(whiteName)+" gagne!";
         } else {
             winnerMessage = "Égalité!";
         }
         
         // Show results dialog
         SwingUtilities.invokeLater(() -> {
-            new ResultsDialog(view, this, winnerMessage, blackScore, whiteScore).setVisible(true);
+            new ResultsDialog(view, this, winnerMessage, blackScore, whiteScore, blackName, whiteName).setVisible(true);
         });
+    }
+
+    private String getName(String className) {
+        switch (className) {
+            case "HumanPlayer": return "Humain";
+            case "RandomBot": return "Bot Aléatoire";
+            case "BFSBot": return "BFS Bot";
+            default: return className;
+        }
     }
 }
 

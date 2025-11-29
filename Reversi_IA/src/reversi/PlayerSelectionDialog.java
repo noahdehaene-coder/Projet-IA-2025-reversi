@@ -29,15 +29,15 @@ public class PlayerSelectionDialog extends JDialog {
         selectionPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         selectionPanel.add(new JLabel("Joueur Noir:", SwingConstants.CENTER));
-        blackPlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire"});
+        blackPlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS"});
         blackPlayerCombo.setFocusable(false);
         blackPlayerCombo.setSelectedItem("Humain"); // DEFAULT: Human for black
         selectionPanel.add(blackPlayerCombo);
         
         selectionPanel.add(new JLabel("Joueur Blanc:", SwingConstants.CENTER));
-        whitePlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire"});
+        whitePlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS"});
         whitePlayerCombo.setFocusable(false); // Remove focus outline
-        whitePlayerCombo.setSelectedItem("Bot Aléatoire");
+        whitePlayerCombo.setSelectedItem("Bot Aléatoire"); // DEFAULT: Bot Aleatoire for white
         selectionPanel.add(whitePlayerCombo);
         
         // Start button
@@ -66,10 +66,12 @@ public class PlayerSelectionDialog extends JDialog {
     }
     
     private Player createPlayer(Couleurcase color, String playerType) {
-        if ("Humain".equals(playerType)) {
+        if ("Humain".equals(playerType)) 
             return new HumanPlayer(color);
-        } else {
+        else if ("Bot Aléatoire".equals(playerType)) 
             return new RandomBot(color);
-        }
+        else
+            return new BFSBot(color);
+
     }
 }
