@@ -8,7 +8,6 @@ public class DijkstraBot extends BotPlayer {
         super(color);
     }
     
-    @Override
     public Move getMove(ReversiPlateau board) {
         List<Move> validMoves = board.getValidMoves(this.color);
         

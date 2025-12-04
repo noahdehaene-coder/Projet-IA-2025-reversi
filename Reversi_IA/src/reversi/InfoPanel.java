@@ -44,6 +44,10 @@ public class InfoPanel extends JPanel {
         case "DijkstraBot" : return "Dijkstra Bot";
         case "GreedyBFSBot" : return "Greedy BFS Bot";
         case "AstarBot" : return "A* Bot";
+        case "AlphaBetaBot": return "AlphaBeta";
+        case "MonteCarloBot": return "Monte Carlo";
+        case "AlphaBetaBotRapide": return "AlphaBeta Rapide";
+        case "DijkstraBotRapide" : return "Dijkstra Bot Rapide";
         default: return className;
     }
 }

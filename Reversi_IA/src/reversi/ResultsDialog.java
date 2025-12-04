@@ -19,11 +19,9 @@ public class ResultsDialog extends JDialog {
         setSize(350, 200);
         setLocationRelativeTo(parent);
         
-        // Result message
         JLabel resultLabel = new JLabel(winner, SwingConstants.CENTER);
         resultLabel.setFont(new Font("Arial", Font.BOLD, 16));
         
-        // Score display
         JLabel scoreLabel = new JLabel(
             String.format("%s: %d - %s: %d", blackName, blackScore, whiteName, whiteScore), 
             SwingConstants.CENTER
@@ -58,7 +56,6 @@ public class ResultsDialog extends JDialog {
         buttonPanel.add(playAgainButton);
         buttonPanel.add(newGame);
         
-        // Layout
         JPanel contentPanel = new JPanel(new GridLayout(4, 1, 10, 10));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         contentPanel.add(resultLabel);
@@ -78,6 +75,8 @@ public class ResultsDialog extends JDialog {
             case "DijkstraBot" : return "Dijkstra Bot";
             case "GreedyBFSBot" : return "Greedy BFS Bot";
             case "AstarBot" : return "A* Bot";
+            case "AlphaBetaBot": return "AlphaBeta (Expert)";
+            case "MonteCarloBot": return "Monte Carlo (Simulations)";
             default: return className;
         }
     }

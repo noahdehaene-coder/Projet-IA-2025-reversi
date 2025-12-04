@@ -29,13 +29,13 @@ public class PlayerSelectionDialog extends JDialog {
         selectionPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         selectionPanel.add(new JLabel("Joueur Noir:", SwingConstants.CENTER));
-        blackPlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS", "DFS", "Dijkstra","Greedy BFS Bot", "A*"});
+        blackPlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS", "DFS", "Dijkstra","Greedy BFS Bot", "A*","AlphaBeta","Monte Carlo","AlphaBeta Rapide", "Dijkstra Rapide"});
         blackPlayerCombo.setFocusable(false);
         blackPlayerCombo.setSelectedItem("Humain"); // DEFAULT: Human for black
         selectionPanel.add(blackPlayerCombo);
         
         selectionPanel.add(new JLabel("Joueur Blanc:", SwingConstants.CENTER));
-        whitePlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS", "DFS", "Dijkstra","Greedy BFS Bot", "A*"});
+        whitePlayerCombo = new JComboBox<>(new String[]{"Humain", "Bot Aléatoire", "BFS", "DFS", "Dijkstra","Greedy BFS Bot", "A*","AlphaBeta","Monte Carlo","AlphaBeta Rapide", "Dijkstra Rapide"});
         whitePlayerCombo.setFocusable(false); // Remove focus outline
         whitePlayerCombo.setSelectedItem("Bot Aléatoire"); // DEFAULT: Bot Aleatoire for white
         selectionPanel.add(whitePlayerCombo);
@@ -66,20 +66,19 @@ public class PlayerSelectionDialog extends JDialog {
     }
     
     private Player createPlayer(Couleurcase color, String playerType) {
-        if ("Humain".equals(playerType)) 
-            return new HumanPlayer(color);
-        else if ("Bot Aléatoire".equals(playerType)) 
-            return new RandomBot(color);
-        else if ("BFS".equals(playerType))
-            return new BFSBot(color);
-        else if ("DFS".equals(playerType))
-            return new DFSBot(color);
-        else if ("Dijkstra".equals(playerType))
-            return new DijkstraBot(color);
-        else if ("Greedy BFS Bot".equals(playerType))
-            return new GreedyBFSBot(color);
-        else 
-            return new AstarBot(color);
-
+    	switch (playerType) {
+        case "Humain": return new HumanPlayer(color);
+        case "Bot Aléatoire": return new RandomBot(color);
+        case "BFS": return new BFSBot(color);
+        case "DFS": return new DFSBot(color);
+        case "Dijkstra": return new DijkstraBot(color);
+        case "Greedy BFS Bot": return new GreedyBFSBot(color);
+        case "A*": return new AstarBot(color);
+        case "AlphaBeta": return new AlphaBetaBot(color, 8);
+        case "Monte Carlo": return new MonteCarloBot(color);
+        case "AlphaBeta Rapide": return new AlphaBetaBotRapide(color, 8);
+        case "Dijkstra Rapide": return new DijkstraBotRapide(color);
+        default: return new RandomBot(color);
+    }
     }
 }
