@@ -1,10 +1,6 @@
 import java.util.*;
 
-/**
- * Classe représentant un bot utilisant l'algorithme A* pour choisir son coup.
- * L'algorithme A* combine le coût réel (g) avec une estimation heuristique (h)
- * pour évaluer les coups : f(n) = g(n) + h(n)
- */
+
 public class AstarBot extends BotPlayer {
     
     /**
