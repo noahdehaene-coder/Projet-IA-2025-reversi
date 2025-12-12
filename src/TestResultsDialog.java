@@ -2,10 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Dialog showing test results.
+ * Boîte de dialogue affichant les résultats des tests entre bots.
+ * Présente les statistiques de victoires, égalités, pourcentages de réussite et le temps d'exécution.
  */
 public class TestResultsDialog extends JDialog {
     
+    /**
+     * Constructeur de la boîte de dialogue des résultats.
+     *
+     * @param parent Fenêtre parente pour le positionnement
+     * @param stats Statistiques des tests à afficher
+     */
     public TestResultsDialog(JFrame parent, TestStatistics stats) {
         super(parent, "Résultats des Tests", true);
         
@@ -13,32 +20,32 @@ public class TestResultsDialog extends JDialog {
         setSize(500, 800);
         setLocationRelativeTo(parent);
         
-        // Title
+        // Titre
         JLabel titleLabel = new JLabel("Résultats des Tests", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         
-        // Results panel
+        // Panneau des résultats
         JPanel resultsPanel = new JPanel(new GridLayout(0, 1, 10, 10));
         resultsPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
         
-        // Bot names
+        // Noms des bots
         resultsPanel.add(createResultLabel(Tests.getName(stats.bot1Type) + " (Noir) vs " + 
                                           Tests.getName(stats.bot2Type) + " (Blanc)", 
                                           Font.BOLD, 14));
         resultsPanel.add(new JSeparator());
         
-        // Number of games
+        // Nombre de parties
         resultsPanel.add(createResultLabel("Nombre de parties: " + stats.totalGames, Font.PLAIN, 13));
         
-        // Wins
+        // Victoires
         resultsPanel.add(createResultLabel(Tests.getName(stats.bot1Type) + " victoires: " + stats.blackWins, 
                                           Font.PLAIN, 13));
         resultsPanel.add(createResultLabel(Tests.getName(stats.bot2Type) + " victoires: " + stats.whiteWins, 
                                           Font.PLAIN, 13));
         resultsPanel.add(createResultLabel("Égalités: " + stats.draws, Font.PLAIN, 13));
         
-        // Win rates
+        // Taux de victoire
         double blackWinRate = (stats.blackWins * 100.0) / stats.totalGames;
         double whiteWinRate = (stats.whiteWins * 100.0) / stats.totalGames;
         double drawRate = (stats.draws * 100.0) / stats.totalGames;
@@ -53,7 +60,7 @@ public class TestResultsDialog extends JDialog {
             String.format("Taux d'égalité: %.1f%%", drawRate),
             Font.PLAIN, 13));
         
-        // Time statistics
+        // Statistiques temporelles
         resultsPanel.add(new JSeparator());
         resultsPanel.add(createResultLabel("Temps total: " + formatTime(stats.totalTimeMillis), 
                                           Font.PLAIN, 13));
@@ -63,7 +70,7 @@ public class TestResultsDialog extends JDialog {
             String.format("Temps moyen par partie: %.0f ms", avgTime),
             Font.PLAIN, 13));
         
-        // Winner
+        // Gagnant global
         resultsPanel.add(new JSeparator());
         String overallWinner;
         if (stats.blackWins > stats.whiteWins) {
@@ -77,13 +84,13 @@ public class TestResultsDialog extends JDialog {
         JLabel winnerLabel = new JLabel(overallWinner, SwingConstants.CENTER);
         winnerLabel.setFont(new Font("Arial", Font.BOLD, 14));
         if (stats.blackWins > stats.whiteWins) {
-            winnerLabel.setForeground(new Color(0, 100, 0)); // Green for winner
+            winnerLabel.setForeground(new Color(0, 100, 0)); // Vert pour le gagnant
         } else if (stats.whiteWins > stats.blackWins) {
             winnerLabel.setForeground(new Color(0, 100, 0));
         }
         resultsPanel.add(winnerLabel);
         
-        // Close button
+        // Bouton Fermer
         JButton closeButton = new JButton("Fermer");
         closeButton.setBackground(new Color(70, 130, 180));
         closeButton.setForeground(Color.WHITE);
@@ -95,7 +102,7 @@ public class TestResultsDialog extends JDialog {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         buttonPanel.add(closeButton);
         
-        // Assembly
+        // Tout mettre ensemble
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.add(titleLabel, BorderLayout.NORTH);
         contentPanel.add(resultsPanel, BorderLayout.CENTER);
@@ -104,12 +111,26 @@ public class TestResultsDialog extends JDialog {
         add(contentPanel);
     }
     
+    /**
+     * Crée un JLabel formaté pour afficher les résultats.
+     *
+     * @param text Texte à afficher
+     * @param style Style de police
+     * @param size Taille de la police
+     * @return JLabel formaté
+     */
     private JLabel createResultLabel(String text, int style, int size) {
         JLabel label = new JLabel(text);
         label.setFont(new Font("Arial", style, size));
         return label;
     }
     
+    /**
+     * Formate un temps en millisecondes en une chaîne lisible.
+     *
+     * @param millis Temps en millisecondes
+     * @return Chaîne formatée
+     */
     private String formatTime(long millis) {
         if (millis < 1000) {
             return millis + " ms";

@@ -2,36 +2,50 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Dialog for configuring bot vs bot tests.
+ * Boîte de dialogue de configuration pour les tests bot contre bot.
+ * Permet de sélectionner les types de bots, le nombre de parties, et de lancer les tests.
  */
 public class TestConfigurationDialog extends JFrame {
     
+    /** Combo box pour sélectionner le premier type de bot (joueur noir) */
     private JComboBox<String> bot1Combo;
+    
+    /** Combo box pour sélectionner le second type de bot (joueur blanc) */
     private JComboBox<String> bot2Combo;
+    
+    /** Spinner pour sélectionner le nombre de parties à exécuter */
     private JSpinner numGamesSpinner;
+    
+    /** Bouton pour lancer l'exécution des tests */
     private JButton runButton;
+    
+    /** Zone de texte pour afficher la progression des tests */
     private JTextArea outputArea;
     
+    /**
+     * Constructeur de la boîte de dialogue de configuration.
+     * Initialise l'interface utilisateur avec les contrôles de sélection.
+     */
     public TestConfigurationDialog() {
         super("Configuration des Tests Bot vs Bot");
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         setLayout(new BorderLayout());
-        setSize(700, 450); // Slightly taller for output area
+        setSize(700, 450); // Légèrement plus haute pour la zone de sortie
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Title
+        // Titre
         JLabel titleLabel = new JLabel("Configuration des Tests Bot vs Bot", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         
-        // Configuration panel - back to original 3x2 layout
+        // Panneau de configuration
         JPanel configPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         configPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Bot 1 selection
+        // Sélection Bot 1
         configPanel.add(new JLabel("Bot 1 (Noir):", SwingConstants.RIGHT));
         bot1Combo = new JComboBox<>(new String[]{
             "Bot Aléatoire", "BFS", "DFS", "Dijkstra", 
@@ -41,7 +55,7 @@ public class TestConfigurationDialog extends JFrame {
         bot1Combo.setFocusable(false); 
         configPanel.add(bot1Combo);
         
-        // Bot 2 selection
+        // Sélection Bot 2
         configPanel.add(new JLabel("Bot 2 (Blanc):", SwingConstants.RIGHT));
         bot2Combo = new JComboBox<>(new String[]{
             "Bot Aléatoire", "BFS", "DFS", "Dijkstra", 
@@ -52,12 +66,12 @@ public class TestConfigurationDialog extends JFrame {
         bot2Combo.setFocusable(false);
         configPanel.add(bot2Combo);
         
-        // Number of games
+        // Nombre de parties
         configPanel.add(new JLabel("Nombre de parties:", SwingConstants.RIGHT));
         numGamesSpinner = new JSpinner(new SpinnerNumberModel(100, 1, 10000, 1));
         configPanel.add(numGamesSpinner);
         
-        // Output area - smaller text area at bottom
+        // Zone de sortie - zone de texte plus petite en bas
         outputArea = new JTextArea(5, 30);
         outputArea.setEditable(false);
         outputArea.setFont(new Font("Monospaced", Font.PLAIN, 11));
@@ -65,7 +79,7 @@ public class TestConfigurationDialog extends JFrame {
         scrollPane.setBorder(BorderFactory.createTitledBorder("Progression"));
         scrollPane.setPreferredSize(new Dimension(380, 100));
         
-        // Run button - keep original size
+        // Bouton Exécuter
         runButton = new JButton("Exécuter les Tests");
         runButton.setBackground(new Color(70, 130, 180));
         runButton.setForeground(Color.WHITE);
@@ -73,7 +87,7 @@ public class TestConfigurationDialog extends JFrame {
         runButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
         runButton.addActionListener(e -> runTests());
         
-        // Assembly
+        // Tout mettre ensemble
         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
@@ -92,19 +106,23 @@ public class TestConfigurationDialog extends JFrame {
         add(contentPanel);
     }
     
+    /**
+     * Lance les tests avec la configuration sélectionnée.
+     * Récupère les paramètres, exécute les tests en arrière-plan et affiche les résultats.
+     */
     private void runTests() {
         String bot1Type = (String) bot1Combo.getSelectedItem();
         String bot2Type = (String) bot2Combo.getSelectedItem();
         int numGames = (int) numGamesSpinner.getValue();
         
-        // Clear previous output and show starting message
+        // Efface la sortie précédente et affiche le message de démarrage
         outputArea.setText("");
         appendToOutput("Démarrage des tests...\n");
         appendToOutput("=======================\n");
         
         runButton.setEnabled(false);
         
-        // Run tests in a separate thread to keep UI responsive
+        // Exécute les tests dans un thread séparé pour garder l'interface réactive
         SwingWorker<TestStatistics, Integer> worker = new SwingWorker<>() {
             @Override
             protected TestStatistics doInBackground() throws Exception {
@@ -116,7 +134,7 @@ public class TestConfigurationDialog extends JFrame {
                 try {
                     TestStatistics stats = get();
                     
-                    // Show results dialog
+                    // Affiche la boîte de dialogue des résultats
                     new TestResultsDialog(TestConfigurationDialog.this, stats).setVisible(true);
                     
                     runButton.setEnabled(true);
@@ -138,12 +156,15 @@ public class TestConfigurationDialog extends JFrame {
     }
     
     /**
-     * Helper method to append text to output area
+     * Méthode pour ajouter du texte à la zone de sortie.
+     * Assure une mise à jour de la zone de texte.
+     *
+     * @param text Texte à ajouter à la zone de sortie
      */
     private void appendToOutput(String text) {
         SwingUtilities.invokeLater(() -> {
             outputArea.append(text);
-            // Auto-scroll to the bottom
+            // Défilement automatique vers le bas
             outputArea.setCaretPosition(outputArea.getDocument().getLength());
         });
     }

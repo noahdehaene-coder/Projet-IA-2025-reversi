@@ -2,29 +2,32 @@ import javax.swing.*;
 import java.util.List;
 
 /**
- * Test class to run multiple games between two bots and display statistics.
- * Allows selecting bots, number of games, and shows win rates and average times.
+ * Classe de test pour exécuter plusieurs parties entre deux bots et afficher des statistiques.
+ * Permet de sélectionner les bots, le nombre de parties, et montre les pourcentages de victoire et le temps moyens.
  */
 public class Tests {
 
     /**
-     * Main entry point for running bot vs bot tests.
-     * Opens a dialog to configure and run the tests.
+     * Point d'entrée principal pour exécuter les tests bot contre bot.
+     * Ouvre une boîte de dialogue pour configurer et exécuter les tests.
+     * 
+     * @param args Arguments de la ligne de commande (non utilisés)
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Create and show the test configuration dialog
+            // Crée et affiche la boîte de dialogue de configuration des tests
             new TestConfigurationDialog().setVisible(true);
         });
     }
 
     /**
-     * Runs a series of games between two bots and collects statistics.
+     * Exécute une série de parties entre deux bots et collecte les statistiques.
      *
-     * @param bot1Type Type of the first bot (black player)
-     * @param bot2Type Type of the second bot (white player)
-     * @param numGames Number of games to play
-     * @return Statistics object containing results
+     * @param bot1Type Type du premier bot (joueur noir)
+     * @param bot2Type Type du second bot (joueur blanc)
+     * @param numGames Nombre de parties à jouer
+     * @param outputArea Zone de texte pour la sortie
+     * @return Objet TestStatistics contenant les résultats
      */
     public static TestStatistics runBotVsBotTests(String bot1Type, String bot2Type, int numGames, JTextArea outputArea) {
         int blackWins = 0;
@@ -38,18 +41,18 @@ public class Tests {
             
             long startTime = System.currentTimeMillis();
             
-            // Create players
+            // Crée les joueurs
             Player blackPlayer = createBot(Couleurcase.NOIR, bot1Type);
             Player whitePlayer = createBot(Couleurcase.BLANC, bot2Type);
             
-            // Simulate the game
+            // Simule la partie
             TestResultat result = simulateGameDirect(blackPlayer, whitePlayer);
             
             long endTime = System.currentTimeMillis();
             long gameDuration = endTime - startTime;
             totalTimeMillis += gameDuration;
             
-            // Update statistics
+            // Met à jour les statistiques
             if (result.winner == Couleurcase.NOIR) {
                 blackWins++;
             } else if (result.winner == Couleurcase.BLANC) {
@@ -67,21 +70,28 @@ public class Tests {
         return new TestStatistics(blackWins, whiteWins, draws, numGames, totalTimeMillis, bot1Type, bot2Type);
     }
 
-     /**
-     * Appends text to the output area in a thread-safe way.
+    /**
+     * Ajoute du texte à la zone de sortie.
+     *
+     * @param outputArea Zone de texte où afficher le message
+     * @param text Texte à afficher
      */
     private static void output(JTextArea outputArea, String text) {
         if (outputArea != null) {
             SwingUtilities.invokeLater(() -> {
                 outputArea.append(text + "\n");
-                // Auto-scroll to the bottom
+                // Auto-scroll vers le bas
                 outputArea.setCaretPosition(outputArea.getDocument().getLength());
             });
         }
     }
     
     /**
-     * Direct simulation of a game between two bots.
+     * Simulation directe d'une partie entre deux bots.
+     *
+     * @param blackPlayer Joueur noir (bot)
+     * @param whitePlayer Joueur blanc (bot)
+     * @return Objet TestResultat contenant le gagnant et les scores
      */
     private static TestResultat simulateGameDirect(Player blackPlayer, Player whitePlayer) {
         ReversiPlateau board = new ReversiPlateau();
@@ -91,7 +101,7 @@ public class Tests {
         int consecutivePasses = 0;
         
         while (true) {
-            // Check if game is over
+            // Vérifie si la partie est terminée
             if (board.GameOver()) {
                 break;
             }
@@ -103,14 +113,14 @@ public class Tests {
                 currentTurn = currentTurn.oppose();
                 
                 if (consecutivePasses >= 2) {
-                    break; // Both players passed consecutively
+                    break; // Les deux joueurs ont passé consécutivement
                 }
                 continue;
             } else {
                 consecutivePasses = 0;
             }
             
-            // Get the bot's move
+            // Obtient le coup du bot
             Move chosenMove = null;
             if (currentTurn == Couleurcase.NOIR) {
                 chosenMove = ((BotPlayer) blackPlayer).getMove(board.copy());
@@ -118,16 +128,16 @@ public class Tests {
                 chosenMove = ((BotPlayer) whitePlayer).getMove(board.copy());
             }
             
-            // Apply the move
+            // Applique le coup
             if (chosenMove != null && board.isMoveValid(chosenMove, currentTurn)) {
                 board.placePion(chosenMove, currentTurn);
             }
             
-            // Switch turn
+            // Change de tour
             currentTurn = currentTurn.oppose();
         }
         
-        // Calculate final scores
+        // Calcule les scores finaux
         int blackScore = board.getScore(Couleurcase.NOIR);
         int whiteScore = board.getScore(Couleurcase.BLANC);
         
@@ -137,14 +147,18 @@ public class Tests {
         } else if (whiteScore > blackScore) {
             winner = Couleurcase.BLANC;
         } else {
-            winner = Couleurcase.VIDE; // Draw
+            winner = Couleurcase.VIDE; // Match nul
         }
         
         return new TestResultat(winner, blackScore, whiteScore);
     }
     
     /**
-     * Creates a bot instance based on the bot type string.
+     * Crée une instance de bot basée sur le type de bot (chaîne).
+     *
+     * @param color Couleur du bot (NOIR ou BLANC)
+     * @param botType Type de bot (chaîne identifiant l'algorithme)
+     * @return Instance de Player correspondant au bot demandé
      */
     private static Player createBot(Couleurcase color, String botType) {
         switch (botType) {
@@ -163,7 +177,10 @@ public class Tests {
     }
     
     /**
-     * Gets the display name of a bot type.
+     * Obtient le nom d'affichage d'un type de bot.
+     *
+     * @param className Identifiant ou nom de classe du bot
+     * @return Nom d'affichage correspondant.
      */
     public static String getName(String className) {
         switch (className) {
