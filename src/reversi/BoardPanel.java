@@ -6,16 +6,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ArrayList; 
 
 /**
  * Panneau graphique représentant le plateau de jeu Reversi.
  * Gère l'affichage du plateau, les pièces et les indications de coups possibles.
  */
 public class BoardPanel extends JPanel {
-    
-    /** Contrôleur de jeu pour gérer les interactions. */
-    private GameController controller;
     
     /** Modèle du plateau contenant l'état actuel du jeu. */
     private ReversiPlateau boardModel;
@@ -32,7 +28,6 @@ public class BoardPanel extends JPanel {
      * @param controller Le contrôleur de jeu qui gère la logique.
      */
     public BoardPanel(GameController controller) {
-        this.controller = controller;
         
         // Définit la taille préférée du panneau (8x8 cellules de CELL_SIZE pixels)
         setPreferredSize(new Dimension(CELL_SIZE * ReversiPlateau.taille, CELL_SIZE * ReversiPlateau.taille));

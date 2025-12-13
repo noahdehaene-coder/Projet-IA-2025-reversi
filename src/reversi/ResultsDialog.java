@@ -2,17 +2,12 @@ package reversi;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Boîte de dialogue affichée à la fin d'une partie de Reversi.
  * Montre les résultats (gagnant, scores) et propose des options pour rejouer.
  */
 public class ResultsDialog extends JDialog {
-    
-    /** Contrôleur de jeu pour gérer les actions de reprise. */
-    private GameController controller;
     
     /**
      * Constructeur de la boîte de dialogue des résultats.
@@ -29,7 +24,6 @@ public class ResultsDialog extends JDialog {
                          int blackScore, int whiteScore, 
                          String blackPlayerName, String whitePlayerName) {
         super(parent, "Partie Terminée", true); // Modale (bloque la fenêtre parente)
-        this.controller = controller;
 
         // Convertit les noms de classe en noms affichables
         String blackName = getName(blackPlayerName);

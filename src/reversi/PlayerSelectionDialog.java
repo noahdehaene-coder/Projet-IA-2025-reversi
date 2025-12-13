@@ -23,8 +23,12 @@ public class PlayerSelectionDialog extends JDialog {
     
     /**
      * Constructeur de la boîte de dialogue de sélection des joueurs.
+     * Si l'utilisateur choisit "Simuler plusieurs parties", cette fenêtre
+     * et la fenêtre parente (le plateau principal) seront fermées et remplacées
+     * par la fenêtre de configuration des tests bot contre bot.
      *
-     * @param parent La fenêtre parente (le plateau de jeu).
+     * @param parent La fenêtre parente (le plateau de jeu) qui sera fermée si l'utilisateur
+     *               choisit de lancer des tests au lieu de jouer une partie.
      * @param controller Le contrôleur de jeu pour démarrer la partie.
      */
     public PlayerSelectionDialog(JFrame parent, GameController controller) {
@@ -121,6 +125,10 @@ public class PlayerSelectionDialog extends JDialog {
     
     /**
      * Crée une instance de joueur selon le type sélectionné.
+     *
+     * @param color La couleur du joueur à créer (NOIR ou BLANC).
+     * @param playerType Le type de joueur sélectionné (chaîne descriptive).
+     * @return Une instance de Player correspondante.
      */
     private Player createPlayer(Couleurcase color, String playerType) {
         switch (playerType) {

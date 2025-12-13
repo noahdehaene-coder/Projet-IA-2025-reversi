@@ -1,7 +1,5 @@
 package reversi;
 
-import java.util.List;
-
 /**
  * Classe représentant un bot Alpha-Beta optimisé utilisant une représentation bit à bit
  * du plateau pour des performances plus rapides.
