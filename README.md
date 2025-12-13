@@ -22,7 +22,6 @@
 <li>Appuyez sur <code>Next</code> jusqu'à arriver à <code>Local Destination</code>, où vous pouvez choisir le dossier dans lequel le projet sera stocké.</li>
 <li>Appuyez sur <code>Finish</code>.</li>
 <li>Le projet apparaîtra dans les Git repositories. Faites un clic droit dessus, sélectionnez <code>Import Projects</code>, puis <code>Finish</code>.</li>
-<li>Naviguez jusqu'à <code>Main.java</code>, puis exécutez-le.</li>
 </ol>
 
 <h2>Utilisation</h2>
@@ -32,6 +31,7 @@
 <li>Une fenêtre de sélection des joueurs s'ouvre</li>
 <li>Choisissez "Humain", "Bot Aléatoire" ou un autre algorithme d'IA pour chaque joueur</li>
 <li>Cliquez sur "Commencer la Partie"</li>
+<li><strong>À la fin d'une partie :</strong> Le bouton <em>Rejouer</em> répète la partie avec les mêmes choix de joueurs, tandis que le bouton <em>Nouvelle Partie</em> nous ramène à la fenêtre de sélection des joueurs initiale</li>
 </ul>
 
 <h3>Lancer des tests entre bots :</h3>
