@@ -1,4 +1,4 @@
-<h1>Reversi AI - Projet d'Intelligence Artificielle</h1>
+<h1>Reversi IA - Projet d'Intelligence Artificielle</h1>
 <p><strong>Un jeu de Reversi (Othello) avec plusieurs algorithmes d'IA, interface graphique complète, et système de tests comparatifs</strong></p>
 
 <h2>Introduction</h2>
@@ -15,7 +15,10 @@
 <li>Sélectionnez <code>Window > Show View > Other</code>.</li>
 <li>Parcourez les options et sélectionnez <code>Git > Git Repositories</code>.</li>
 <li>Dans la vue Git Repositories, cliquez sur <code>Clone a Git Repository</code>.</li>
-<li>Dans Clone URL, entrez dans la boîte URL : <code>https://github.com/noahdehaene-coder/Projet-IA-2025-reversi.git</code></li>
+<li>Dans Clone URL, entrez dans la boîte URL : 
+<pre style="background-color: #f6f8fa; border: 1px solid #e1e4e8; border-radius: 6px; padding: 16px; margin: 10px 0; overflow: auto;">
+<code>git clone https://github.com/[votre-username]/reversi-ai-project.git</code>
+</pre></li>
 <li>Appuyez sur <code>Next</code> jusqu'à arriver à <code>Local Destination</code>, où vous pouvez choisir le dossier dans lequel le projet sera stocké.</li>
 <li>Appuyez sur <code>Finish</code>.</li>
 <li>Le projet apparaîtra dans les Git repositories. Faites un clic droit dessus, sélectionnez <code>Import Projects</code>, puis <code>Finish</code>.</li>
@@ -25,7 +28,7 @@
 <h2>Utilisation</h2>
 <h3>Lancer une partie normale :</h3>
 <ul>
-<li>Exécutez <code>java reversi.Main</code></li>
+<li>Exécutez <code>Main.java</code></li>
 <li>Une fenêtre de sélection des joueurs s'ouvre</li>
 <li>Choisissez "Humain", "Bot Aléatoire" ou un autre algorithme d'IA pour chaque joueur</li>
 <li>Cliquez sur "Commencer la Partie"</li>
@@ -54,6 +57,6 @@
 </ul>
 
 <h2>Projet par:</h2>
-<p>Joe HAJJ ASSAF</p>
-<p>Noah DEHAENE</p>
-<p>Amine EL FEJER</p>
+<p>Joe HAJJ ASSAF (BigSealFan)</p>
+<p>Noah DEHAENE (noahdehaene-coder)</p>
+<p>Amine EL FEJER (Thatonethereyes)</p>
