@@ -2,8 +2,6 @@ package reversi;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Boîte de dialogue permettant de sélectionner le type de chaque joueur
@@ -14,6 +12,9 @@ public class PlayerSelectionDialog extends JDialog {
     /** Contrôleur de jeu pour démarrer la nouvelle partie. */
     private GameController controller;
     
+    /** Référence à la fenêtre principale (le plateau) pour pouvoir la fermer. */
+    private JFrame parentFrame;
+    
     /** Liste déroulante pour sélectionner le joueur noir. */
     private JComboBox<String> blackPlayerCombo;
     
@@ -23,15 +24,16 @@ public class PlayerSelectionDialog extends JDialog {
     /**
      * Constructeur de la boîte de dialogue de sélection des joueurs.
      *
-     * @param parent La fenêtre parente (centrage).
+     * @param parent La fenêtre parente (le plateau de jeu).
      * @param controller Le contrôleur de jeu pour démarrer la partie.
      */
     public PlayerSelectionDialog(JFrame parent, GameController controller) {
         super(parent, "Configuration des Joueurs", true); // Modale (bloque la fenêtre parente)
         this.controller = controller;
+        this.parentFrame = parent; // On sauvegarde la référence du plateau
         
         setLayout(new BorderLayout());
-        setSize(300, 250);
+        setSize(300, 320); 
         setLocationRelativeTo(parent); // Centre par rapport à la fenêtre parente
         setResizable(false); // Empêche le redimensionnement
         
@@ -52,7 +54,7 @@ public class PlayerSelectionDialog extends JDialog {
             "AlphaBeta Rapide", "Dijkstra Rapide"
         });
         blackPlayerCombo.setFocusable(false); // Désactive le focus visuel
-        blackPlayerCombo.setSelectedItem("Humain"); // Valeur par défaut : Humain pour les noirs
+        blackPlayerCombo.setSelectedItem("Humain"); // Valeur par défaut
         selectionPanel.add(blackPlayerCombo);
         
         // Configuration pour le joueur blanc
@@ -63,47 +65,62 @@ public class PlayerSelectionDialog extends JDialog {
             "AlphaBeta Rapide", "Dijkstra Rapide"
         });
         whitePlayerCombo.setFocusable(false); // Désactive le focus visuel
-        whitePlayerCombo.setSelectedItem("Bot Aléatoire"); // Valeur par défaut : Bot Aléatoire pour les blancs
+        whitePlayerCombo.setSelectedItem("Bot Aléatoire"); // Valeur par défaut
         selectionPanel.add(whitePlayerCombo);
         
-        // Bouton de démarrage
+        
+        // Bouton Démarrer la partie
         JButton startButton = new JButton("Commencer la Partie");
         startButton.setBackground(new Color(70, 130, 180)); // Bleu
         startButton.setForeground(Color.WHITE);
-        startButton.setFocusPainted(false); // Enlève le contour de focus
-        startButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Marge intérieure
-        startButton.addActionListener(e -> startGame()); // Associe l'action au clic
+        startButton.setFocusPainted(false);
+        startButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        startButton.addActionListener(e -> startGame());
+
+        // Bouton Simuler plusieurs parties
+        JButton simulationButton = new JButton("Simuler plusieurs parties");
+        simulationButton.setBackground(new Color(60, 179, 113)); // Vert
+        simulationButton.setForeground(Color.WHITE);
+        simulationButton.setFocusPainted(false);
+        simulationButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        simulationButton.addActionListener(e -> {
+            new TestConfigurationDialog().setVisible(true);
+            
+            dispose();
+            
+            if (parentFrame != null) {
+                parentFrame.dispose();
+            }
+        });
+
+        // Panneau conteneur pour les boutons
+        JPanel buttonsPanel = new JPanel(new GridLayout(2, 1, 0, 10));
+        buttonsPanel.add(startButton);
+        buttonsPanel.add(simulationButton);
         
         // Assemblage du contenu
         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         contentPanel.add(titleLabel, BorderLayout.NORTH);
         contentPanel.add(selectionPanel, BorderLayout.CENTER);
-        contentPanel.add(startButton, BorderLayout.SOUTH);
+        contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
         
         add(contentPanel);
     }
     
     /**
      * Démarre une nouvelle partie avec les joueurs sélectionnés.
-     * Crée les instances de joueurs appropriées et les passe au contrôleur.
      */
     private void startGame() {
-        // Crée les joueurs selon la sélection
         Player blackPlayer = createPlayer(Couleurcase.NOIR, (String) blackPlayerCombo.getSelectedItem());
         Player whitePlayer = createPlayer(Couleurcase.BLANC, (String) whitePlayerCombo.getSelectedItem());
         
-        // Démarre la nouvelle partie via le contrôleur
         controller.startNewGame(blackPlayer, whitePlayer);
-        dispose(); // Ferme la boîte de dialogue
+        dispose();
     }
     
     /**
      * Crée une instance de joueur selon le type sélectionné.
-     *
-     * @param color La couleur du joueur à créer (NOIR ou BLANC).
-     * @param playerType Le type de joueur sélectionné (chaîne descriptive).
-     * @return Une instance de Player correspondante.
      */
     private Player createPlayer(Couleurcase color, String playerType) {
         switch (playerType) {
@@ -114,11 +131,11 @@ public class PlayerSelectionDialog extends JDialog {
             case "Dijkstra": return new DijkstraBot(color);
             case "Greedy BFS Bot": return new GreedyBFSBot(color);
             case "A*": return new AstarBot(color);
-            case "AlphaBeta": return new AlphaBetaBot(color, 8); // Profondeur 8
+            case "AlphaBeta": return new AlphaBetaBot(color, 8);
             case "Monte Carlo": return new MonteCarloBot(color);
-            case "AlphaBeta Rapide": return new AlphaBetaBotRapide(color, 8); // Profondeur 8
+            case "AlphaBeta Rapide": return new AlphaBetaBotRapide(color, 8);
             case "Dijkstra Rapide": return new DijkstraBotRapide(color);
-            default: return new RandomBot(color); // Fallback au bot aléatoire
+            default: return new RandomBot(color);
         }
     }
 }

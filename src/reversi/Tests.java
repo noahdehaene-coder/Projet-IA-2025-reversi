@@ -10,19 +10,6 @@ import java.util.List;
 public class Tests {
 
     /**
-     * Point d'entrée principal pour exécuter les tests bot contre bot.
-     * Ouvre une boîte de dialogue pour configurer et exécuter les tests.
-     * 
-     * @param args Arguments de la ligne de commande (non utilisés)
-     */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            // Crée et affiche la boîte de dialogue de configuration des tests
-            new TestConfigurationDialog().setVisible(true);
-        });
-    }
-
-    /**
      * Exécute une série de parties entre deux bots et collecte les statistiques.
      *
      * @param bot1Type Type du premier bot (joueur noir)
