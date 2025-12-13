@@ -31,7 +31,7 @@
 <li>Une fenêtre de sélection des joueurs s'ouvre</li>
 <li>Choisissez "Humain", "Bot Aléatoire" ou un autre algorithme d'IA pour chaque joueur</li>
 <li>Cliquez sur "Commencer la Partie"</li>
-<li><strong>À la fin d'une partie :</strong> Le bouton <em>Rejouer</em> répète la partie avec les mêmes choix de joueurs, tandis que le bouton <em>Nouvelle Partie</em> nous ramène à la fenêtre de sélection des joueurs initiale</li>
+<li><strong>À la fin d'une partie :</strong> Le bouton "Rejouer" répète la partie avec les mêmes choix de joueurs, tandis que le bouton "Nouvelle Partie" nous ramène à la fenêtre de sélection des joueurs initiale</li>
 </ul>
 
 <h3>Lancer des tests entre bots :</h3>
