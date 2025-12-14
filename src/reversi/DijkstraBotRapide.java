@@ -151,31 +151,24 @@ public class DijkstraBotRapide extends BotPlayer {
             }
 
             // Génération des états voisins (coups possibles)
-            // On récupère les indices des coups valides dans une liste
-            List<Integer> initialIndices = new ArrayList<>();
             for (int i = 0; i < 64; i++) {
-                if ((validMoves & (1L << i)) != 0) {
-                    initialIndices.add(i);
+                if ((nextMovesMask & (1L << i)) != 0) {
+                    FastReversiBoard nextBoard = current.board.copy();
+                    nextBoard.makeMove(i / 8, i % 8, isBlackTurnNow);
+                    
+                    int newAdvantage = evaluateBoardAdvantage(nextBoard, myColorIsBlack);
+                    // Le coût de l'arête est la variation d'avantage
+                    // On veut minimiser le score final (qui est -Avantage)
+                    int newDistance = -newAdvantage; 
+                    
+                    String key = getKey(nextBoard);
+                    
+                    if (!distances.containsKey(key) || newDistance < distances.get(key)) {
+                        distances.put(key, newDistance);
+                        firstMoves.putIfAbsent(key, firstMoves.get(currentKey));
+                        queue.add(new BoardNode(nextBoard, newDistance, current.depth + 1));
+                    }
                 }
-            }
-            
-            // 2. On mélange cette liste
-            Collections.shuffle(initialIndices);
-            
-            // 3. On itère sur la liste mélangée
-            for (int i : initialIndices) {
-                // Le reste du code reste IDENTIQUE à avant (copie, move, calcul distance...)
-                FastReversiBoard nextBoard = startBoard.copy();
-                nextBoard.makeMove(i / 8, i % 8, myColorIsBlack);
-                
-                String key = getKey(nextBoard);
-                int dist = -evaluateBoardAdvantage(nextBoard, myColorIsBlack);
-                
-                distances.put(key, dist);
-                Move moveObj = new Move(i / 8, i % 8);
-                firstMoves.put(key, moveObj);
-                
-                queue.add(new BoardNode(nextBoard, dist, 1));
             }
         }
         
