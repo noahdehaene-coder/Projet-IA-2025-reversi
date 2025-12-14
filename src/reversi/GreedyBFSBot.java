@@ -36,6 +36,8 @@ public class GreedyBFSBot extends BotPlayer {
             return null;
         }
         
+        java.util.Collections.shuffle(validMoves);
+        
         // Si un seul coup possible, le retourne immédiatement
         if (validMoves.size() == 1) {
             return validMoves.get(0);

@@ -40,6 +40,8 @@ public class AstarBot extends BotPlayer {
             return validMoves.get(0);
         }
         
+        java.util.Collections.shuffle(validMoves);
+        
         // Utilise la recherche A* pour trouver le meilleur coup avec une profondeur de 4
         return aStarSearch(board, validMoves, 4);
     }

@@ -42,6 +42,8 @@ public class DFSBot extends BotPlayer {
             return validMoves.get(0);
         }
         
+        java.util.Collections.shuffle(validMoves);
+        
         // Effectue une recherche DFS jusqu'à 6 coups d'avance
         return dfsSearch(board, validMoves, 6);
     }

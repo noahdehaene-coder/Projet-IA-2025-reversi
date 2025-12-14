@@ -37,6 +37,8 @@ public class DijkstraBot extends BotPlayer {
             return validMoves.get(0);
         }
         
+        java.util.Collections.shuffle(validMoves);
+        
         return dijkstraSearch(board, validMoves);
     }
     

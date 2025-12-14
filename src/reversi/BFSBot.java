@@ -43,6 +43,8 @@ public class BFSBot extends BotPlayer {
             return validMoves.get(0);
         }
         
+        java.util.Collections.shuffle(validMoves);
+        
         // Effectue une recherche BFS jusqu'à 6 coups d'avance
         return bfsSearch(board, validMoves, 6);
     }
